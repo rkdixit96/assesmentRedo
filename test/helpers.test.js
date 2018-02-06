@@ -8,4 +8,12 @@ describe('Testing helpers', () => {
     });
     done();
   });
+  test('Adds id attribute to books', (done) => {
+    helpers.combineDataFromURLs('https://5gj1qvkc5h.execute-api.us-east-1.amazonaws.com/dev/allBooks', 'https://5gj1qvkc5h.execute-api.us-east-1.amazonaws.com/dev/findBookById').then((data) => {
+      data.forEach((element) => {
+        expect(element).toHaveProperty('rating');
+      }, this);
+      done();
+    });
+  });
 });
