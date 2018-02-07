@@ -6,6 +6,9 @@ module.exports = [{
   path: '/books',
   handler: (request, response) => {
     helpers.combineDataFromURLs('https://5gj1qvkc5h.execute-api.us-east-1.amazonaws.com/dev/allBooks', 'https://5gj1qvkc5h.execute-api.us-east-1.amazonaws.com/dev/findBookById').then((data) => {
+      models.books.findAll({ group: 'author' }).then((result) => {
+        response(result);
+      });
       response(data);
     });
   },
@@ -37,11 +40,17 @@ module.exports = [{
   method: 'POST',
   path: '/books/{id}/like',
   handler: (request, response) => {
-    models.likes.create({
-      bookid: parseInt(request.params.id, 10),
-      liked: true,
-    }).then(() => {
-      response('Liked');
+    models.likes.count({ where: { bookid: parseInt(request.params.id, 10) } }).then((count) => {
+      if (count !== 1) {
+        models.likes.create({
+          bookid: parseInt(request.params.id, 10),
+          liked: true,
+        }).then(() => {
+          response('Liked');
+        });
+      } else {
+        response('Already done');
+      }
     });
   },
 }];
