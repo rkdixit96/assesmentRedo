@@ -15,5 +15,5 @@ describe('Testing helpers', () => {
       }, this);
       done();
     });
-  });
+  }, 20000);
 });

@@ -10,7 +10,7 @@ describe('Testing Hapi server', () => {
       // console.log(response);
       expect(response.statusCode).toBe(200);
       done();
-    });
+    }, 10000);
   });
   test('Responds with 201 for post request', (done) => {
     const options = {
@@ -22,6 +22,17 @@ describe('Testing Hapi server', () => {
       expect(response.statusCode).toBe(200);
       done();
     });
-  });
+  }, 10000);
+  test('Responds with 201 for post request like', (done) => {
+    const options = {
+      method: 'POST',
+      url: '/books/1/like',
+    };
+    server.inject(options, (response) => {
+      // console.log(response);
+      expect(response.statusCode).toBe(200);
+      done();
+    });
+  }, 10000);
 });
 
