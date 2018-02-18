@@ -1,5 +1,16 @@
 const https = require('https');
 
+const groupDataBasedOnKey = (data, key) => {
+  const groupedData = {};
+  data.forEach((element) => {
+    if (groupedData[element[key]] === undefined) {
+      groupedData[element[key]] = [];
+    }
+    groupedData[element[key]].push(element);
+  }, this);
+  return groupedData;
+};
+
 const getDataFromURL = (url) => {
   const urlPromise = new Promise((resolve, reject) => {
     https.get(url, (response) => {
@@ -52,5 +63,5 @@ const combineDataFromURLs = (bookURL, ratingURL) => {
 //   console.log(data);
 // });
 
-module.exports = { getDataFromURL, combineDataFromURLs };
+module.exports = { getDataFromURL, combineDataFromURLs, groupDataBasedOnKey };
 

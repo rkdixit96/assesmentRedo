@@ -6,10 +6,12 @@ module.exports = [{
   path: '/books',
   handler: (request, response) => {
     helpers.combineDataFromURLs('https://5gj1qvkc5h.execute-api.us-east-1.amazonaws.com/dev/allBooks', 'https://5gj1qvkc5h.execute-api.us-east-1.amazonaws.com/dev/findBookById').then((data) => {
-      models.books.findAll({ group: 'author' }).then((result) => {
-        response(result);
+      const groupedData = helpers.groupDataBasedOnKey(data, 'Author');
+      const sortedData = {};
+      Object.keys(groupedData).forEach((author) => {
+        sortedData[author] = groupedData[author].sort((a, b) => a.rating > b.rating);
       });
-      response(data);
+      response(sortedData);
     });
   },
 }, {
@@ -37,20 +39,65 @@ module.exports = [{
     });
   },
 }, {
-  method: 'POST',
+  method: 'PUT',
   path: '/books/{id}/like',
   handler: (request, response) => {
-    models.likes.count({ where: { bookid: parseInt(request.params.id, 10) } }).then((count) => {
-      if (count !== 1) {
+    models.likes.count({
+      where:
+        {
+          bookid: parseInt(request.params.id, 10),
+        },
+    }).then((count) => {
+      if (count === 1) {
+        models.likes.update(
+          {
+            bookid: parseInt(request.params.id, 10),
+            liked: true,
+          },
+          {
+            where: {
+              bookid: parseInt(request.params.id, 10),
+            },
+          },
+        );
+      } else {
         models.likes.create({
           bookid: parseInt(request.params.id, 10),
           liked: true,
-        }).then(() => {
-          response('Liked');
         });
-      } else {
-        response('Already done');
       }
+      response('Liked');
+    });
+  },
+}, {
+  method: 'PUT',
+  path: '/books/{id}/dislike',
+  handler: (request, response) => {
+    models.likes.count({
+      where:
+        {
+          bookid: parseInt(request.params.id, 10),
+        },
+    }).then((count) => {
+      if (count === 1) {
+        models.likes.update(
+          {
+            bookid: parseInt(request.params.id, 10),
+            liked: false,
+          },
+          {
+            where: {
+              bookid: parseInt(request.params.id, 10),
+            },
+          },
+        );
+      } else {
+        models.likes.create({
+          bookid: parseInt(request.params.id, 10),
+          liked: false,
+        });
+      }
+      response('Disliked');
     });
   },
 }];
