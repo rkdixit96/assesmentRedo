@@ -14,6 +14,19 @@ module.exports = [{
       response(sortedData);
     });
   },
+},
+{
+  method: 'GET',
+  path: '/books/v2',
+  handler: (request, response) => {
+    models.books.findAll().then((result) => {
+      console.log(result);
+      response({
+        statusCode: 200,
+        result,
+      });
+    });
+  },
 }, {
   method: 'POST',
   path: '/books',
