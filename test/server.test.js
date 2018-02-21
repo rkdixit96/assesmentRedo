@@ -34,5 +34,15 @@ describe('Testing Hapi server', () => {
       done();
     });
   }, 10000);
+  test('Responds with 200 for successful get request', (done) => {
+    const options = {
+      method: 'GET',
+      url: '/books/likes',
+    };
+    server.inject(options, (response) => {
+      expect(response.statusCode).toBe(200);
+      done();
+    });
+  });
 });
 
